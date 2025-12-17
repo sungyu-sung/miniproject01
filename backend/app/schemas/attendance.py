@@ -1,0 +1,19 @@
+from pydantic import BaseModel
+from datetime import date
+from app.models.attendance import AttendanceStatus
+
+
+class AttendanceCreate(BaseModel):
+    student_id: int
+    date: date
+    status: AttendanceStatus
+
+
+class AttendanceResponse(BaseModel):
+    id: int
+    student_id: int
+    date: date
+    status: AttendanceStatus
+
+    class Config:
+        from_attributes = True
