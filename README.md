@@ -1,5 +1,8 @@
 # miniproject01 - 학생 관리 시스템
 
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/sungyu-sung/miniproject01)
+
+
 파이썬 심화반 프로젝트
 
 Python + React 기반의 학생 관리 시스템으로, 출결 및 성적을 체계적으로 관리합니다.
