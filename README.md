@@ -6,6 +6,20 @@ Python 기반의 학생 관리 시스템으로, 출결 및 성적을 체계적�
 
 ---
 
+## 개발 진행률
+
+```
+Backend API     [####################] 100%
+인증 시스템      [####################] 100%
+Frontend        [                    ]   0%
+테스트 코드      [                    ]   0%
+배포/인프라      [                    ]   0%
+```
+
+**현재 단계:** Backend API 완료 → 서버 테스트 및 Frontend 개발 예정
+
+---
+
 ## 개발 현황
 
 ### 완료된 기능
@@ -19,14 +33,23 @@ Python 기반의 학생 관리 시스템으로, 출결 및 성적을 체계적�
 - [x] 출결 관리 API (등록, 조회, 삭제)
 - [x] 성적 관리 API (CRUD)
 
-### 미완료 기능 (TODO)
+### TODO 리스트
+
+#### 우선순위 높음 (즉시 진행)
+- [ ] 서버 실행 및 API 테스트 (Swagger UI)
+- [ ] 테스트 데이터 생성 (Admin 계정, 샘플 학생)
+- [ ] pytest 기반 API 테스트 코드 작성
+
+#### 우선순위 중간 (핵심 기능)
 - [ ] Frontend 개발 (React.js 또는 Vue.js)
+- [ ] 추가 API 기능 (출결/성적 통계, 학생 검색)
+- [ ] 통계/시각화 기능 (matplotlib/seaborn)
+
+#### 우선순위 낮음 (운영 준비)
 - [ ] PostgreSQL 운영 DB 연동
 - [ ] Docker 컨테이너화
-- [ ] 클라우드 배포
-- [ ] API 테스트 코드 작성
-- [ ] 통계/시각화 기능 (matplotlib/seaborn)
-- [ ] HTTPS 적용
+- [ ] 클라우드 배포 (AWS/GCP/Azure)
+- [ ] HTTPS 적용 및 보안 강화
 - [ ] 로그 시스템 구축
 
 ---
@@ -127,12 +150,25 @@ uvicorn app.main:app --reload
 
 ## 개발 일지
 
+### 2025-12-19 (Day 2)
+- README.md 및 claude.md 문서 정리
+- TODO 리스트 우선순위 정립
+- 개발 진행률 시각화 추가
+
 ### 2025-12-17 (Day 1)
 - 프로젝트 초기화 및 GitHub 연동
 - FastAPI 백엔드 기본 구조 구축
 - 데이터베이스 모델 설계 및 구현
 - JWT 인증 시스템 구현
 - REST API 엔드포인트 구현 (Auth, Students, Attendance, Grades)
+
+---
+
+## 다음 작업 예정
+
+1. **서버 실행 테스트** - `uvicorn app.main:app --reload`
+2. **Swagger UI 테스트** - 회원가입 → 로그인 → 학생등록 → 출결/성적 입력
+3. **Frontend 개발** 또는 **테스트 코드 작성**
 
 ---
 
