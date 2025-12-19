@@ -11,12 +11,12 @@ Python 기반의 학생 관리 시스템으로, 출결 및 성적을 체계적�
 ```
 Backend API     [####################] 100%
 인증 시스템      [####################] 100%
+테스트 코드      [####################] 100%  (28개 테스트 통과)
 Frontend        [                    ]   0%
-테스트 코드      [                    ]   0%
 배포/인프라      [                    ]   0%
 ```
 
-**현재 단계:** Backend API 완료 → 서버 테스트 및 Frontend 개발 예정
+**현재 단계:** Backend + 테스트 완료 → Frontend 개발 예정
 
 ---
 
@@ -32,18 +32,19 @@ Frontend        [                    ]   0%
 - [x] 학생 관리 API (CRUD)
 - [x] 출결 관리 API (등록, 조회, 삭제)
 - [x] 성적 관리 API (CRUD)
+- [x] 서버 실행 및 API 테스트 (Swagger UI)
+- [x] 테스트 데이터 생성 스크립트 (seed_data.py)
+- [x] pytest 기반 API 테스트 코드 (28개 테스트)
 
 ### TODO 리스트
 
-#### 우선순위 높음 (즉시 진행)
-- [ ] 서버 실행 및 API 테스트 (Swagger UI)
-- [ ] 테스트 데이터 생성 (Admin 계정, 샘플 학생)
-- [ ] pytest 기반 API 테스트 코드 작성
-
-#### 우선순위 중간 (핵심 기능)
+#### 우선순위 높음 (핵심 기능)
 - [ ] Frontend 개발 (React.js 또는 Vue.js)
 - [ ] 추가 API 기능 (출결/성적 통계, 학생 검색)
+
+#### 우선순위 중간 (기능 확장)
 - [ ] 통계/시각화 기능 (matplotlib/seaborn)
+- [ ] 대시보드 페이지
 
 #### 우선순위 낮음 (운영 준비)
 - [ ] PostgreSQL 운영 DB 연동
@@ -85,20 +86,15 @@ miniproject01/
 │   │   ├── database.py       # DB 연결 설정
 │   │   ├── auth.py           # JWT 인증 모듈
 │   │   ├── models/           # SQLAlchemy 모델
-│   │   │   ├── user.py       # 사용자 모델
-│   │   │   ├── student.py    # 학생 모델
-│   │   │   ├── attendance.py # 출결 모델
-│   │   │   └── grade.py      # 성적 모델
 │   │   ├── schemas/          # Pydantic 스키마
-│   │   │   ├── user.py
-│   │   │   ├── student.py
-│   │   │   ├── attendance.py
-│   │   │   └── grade.py
 │   │   └── routers/          # API 라우터
-│   │       ├── auth.py       # 인증 API
-│   │       ├── students.py   # 학생 API
-│   │       ├── attendance.py # 출결 API
-│   │       └── grades.py     # 성적 API
+│   ├── tests/                 # pytest 테스트
+│   │   ├── conftest.py       # 테스트 설정
+│   │   ├── test_auth.py      # 인증 테스트
+│   │   ├── test_students.py  # 학생 API 테스트
+│   │   ├── test_attendance.py# 출결 API 테스트
+│   │   └── test_grades.py    # 성적 API 테스트
+│   ├── seed_data.py          # 테스트 데이터 생성
 │   └── requirements.txt
 ├── frontend/                  # (추후 구현)
 ├── .gitignore
@@ -151,9 +147,20 @@ uvicorn app.main:app --reload
 ## 개발 일지
 
 ### 2025-12-19 (Day 2)
+
+**오전 10:00 ~ 10:30**
 - README.md 및 claude.md 문서 정리
 - TODO 리스트 우선순위 정립
 - 개발 진행률 시각화 추가
+- GitHub 커밋/푸시
+
+**오전 10:30 ~ 11:30**
+- Python 3.14 호환성을 위한 requirements.txt 업데이트
+- bcrypt 직접 사용으로 passlib 호환성 문제 해결 (auth.py 수정)
+- 서버 실행 및 Swagger UI API 테스트 완료
+- 테스트 데이터 생성 스크립트 작성 (seed_data.py)
+- Admin 계정 + 학생 3명 + 출결 6건 + 성적 9건 등록
+- pytest 기반 API 테스트 코드 작성 (28개 테스트 전체 통과)
 
 ### 2025-12-17 (Day 1)
 - 프로젝트 초기화 및 GitHub 연동
@@ -166,9 +173,9 @@ uvicorn app.main:app --reload
 
 ## 다음 작업 예정
 
-1. **서버 실행 테스트** - `uvicorn app.main:app --reload`
-2. **Swagger UI 테스트** - 회원가입 → 로그인 → 학생등록 → 출결/성적 입력
-3. **Frontend 개발** 또는 **테스트 코드 작성**
+1. **Frontend 개발** - React.js 또는 Vue.js 선택
+2. **추가 API 기능** - 출결/성적 통계, 학생 검색
+3. **대시보드 페이지** 구현
 
 ---
 

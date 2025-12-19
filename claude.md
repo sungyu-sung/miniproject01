@@ -12,7 +12,7 @@
 
 ---
 
-## 현재 개발 상태 (2025-12-19 기준)
+## 현재 개발 상태 (2025-12-19 11:30 기준)
 
 ### 완료된 작업
 
@@ -25,11 +25,19 @@ miniproject01/
 │   │   ├── main.py           # FastAPI 앱 (CORS 설정 포함)
 │   │   ├── config.py         # 환경변수 설정 (pydantic-settings)
 │   │   ├── database.py       # SQLAlchemy 세션 관리
-│   │   ├── auth.py           # JWT 인증/인가 함수
+│   │   ├── auth.py           # JWT 인증/인가 함수 (bcrypt 직접 사용)
 │   │   ├── models/           # DB 모델
 │   │   ├── schemas/          # Pydantic 스키마
 │   │   └── routers/          # API 엔드포인트
+│   ├── tests/                 # pytest 테스트 (28개)
+│   │   ├── conftest.py       # 테스트 설정 및 fixtures
+│   │   ├── test_auth.py      # 인증 테스트 (6개)
+│   │   ├── test_students.py  # 학생 API 테스트 (10개)
+│   │   ├── test_attendance.py# 출결 API 테스트 (5개)
+│   │   └── test_grades.py    # 성적 API 테스트 (7개)
+│   ├── seed_data.py          # 테스트 데이터 생성 스크립트
 │   └── requirements.txt
+├── venv/                      # Python 가상환경 (Python 3.14)
 ├── .gitignore
 ├── claude.md
 └── README.md
@@ -76,41 +84,33 @@ miniproject01/
 #### 4. 인증/인가 시스템
 
 - JWT 기반 인증 (`python-jose`)
-- 비밀번호 해시 (`passlib[bcrypt]`)
+- 비밀번호 해시 (`bcrypt` 직접 사용 - passlib 호환성 문제 해결)
 - OAuth2PasswordBearer 사용
 - 권한 헬퍼 함수:
   - `get_current_user`: 인증된 사용자
   - `get_current_admin`: Admin만
   - `get_current_teacher_or_admin`: Teacher 또는 Admin
 
-#### 5. 설정값 (`config.py`)
+#### 5. 테스트 코드 (pytest)
 
-```python
-DATABASE_URL = "sqlite:///./student_management.db"
-SECRET_KEY = "your-secret-key-change-in-production"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
-```
+- **총 28개 테스트 전체 통과**
+- 테스트 DB: SQLite in-memory
+- conftest.py에 fixtures 정의 (client, admin_token, auth_headers, sample_student)
+
+#### 6. 테스트 데이터
+
+현재 DB에 등록된 데이터:
+- Admin 계정: admin / admin123
+- 학생 3명: Kim Cheolsu, Lee Younghee, Park Minsu
+- 출결 6건 (2025-12-18, 2025-12-19)
+- 성적 9건 (국어, 수학, 영어)
 
 ---
 
 ## 다음 개발 작업 (TODO)
 
 ### 우선순위 높음
-1. **서버 테스트 실행**
-   - `cd backend && uvicorn app.main:app --reload`
-   - http://localhost:8000/docs 에서 API 테스트
-
-2. **테스트 데이터 생성**
-   - Admin 계정 생성
-   - 샘플 학생 데이터 등록
-
-3. **API 테스트 코드 작성**
-   - pytest 사용
-   - `backend/tests/` 디렉토리 생성
-
-### 우선순위 중간
-4. **Frontend 개발**
+1. **Frontend 개발**
    - 기술 선택: React.js 또는 Vue.js
    - `frontend/` 디렉토리에 구현
    - 주요 페이지:
@@ -120,28 +120,29 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
      - 출결 관리 페이지
      - 성적 관리 페이지
 
-5. **추가 API 기능**
+2. **추가 API 기능**
    - 출결 통계 API
    - 성적 통계 API
    - 학생 검색 API
 
-6. **통계/시각화 기능**
+### 우선순위 중간
+3. **통계/시각화 기능**
    - matplotlib/seaborn 활용
    - 출결 현황 차트
    - 성적 분포 그래프
 
 ### 우선순위 낮음
-7. **인프라**
+4. **인프라**
    - PostgreSQL 연동
    - Docker 컨테이너화
    - 클라우드 배포 (AWS/GCP/Azure)
 
-8. **보안 강화**
+5. **보안 강화**
    - HTTPS 적용
    - Rate limiting
    - 입력 검증 강화
 
-9. **로그 시스템 구축**
+6. **로그 시스템 구축**
    - 요청/응답 로깅
    - 에러 로깅
    - 로그 파일 관리
@@ -153,23 +154,32 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 ### 서버 실행 방법
 ```bash
 cd c:/rokey/miniproject01
-python -m venv venv
-venv\Scripts\activate
-pip install -r backend/requirements.txt
+source venv/Scripts/activate  # 이미 가상환경 생성됨
 cd backend
 uvicorn app.main:app --reload
 ```
 
-### 주요 의존성
+### 테스트 실행 방법
+```bash
+cd c:/rokey/miniproject01/backend
+source ../venv/Scripts/activate
+python -m pytest tests/ -v
 ```
-fastapi==0.109.0
-uvicorn[standard]==0.27.0
-sqlalchemy==2.0.25
-pydantic==2.5.3
-pydantic-settings==2.1.0
-python-jose[cryptography]==3.3.0
-passlib[bcrypt]==1.7.4
-python-multipart==0.0.6
+
+### 주요 의존성 (Python 3.14 호환)
+```
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+sqlalchemy>=2.0.36
+pydantic>=2.10.0
+pydantic-settings>=2.6.0
+python-jose[cryptography]>=3.3.0
+bcrypt>=4.0.0
+python-multipart>=0.0.17
+requests>=2.31.0
+pytest>=8.0.0
+pytest-asyncio>=0.23.0
+httpx>=0.27.0
 ```
 
 ### Git 정보
@@ -195,14 +205,43 @@ python-multipart==0.0.6
    - 현재 `allow_origins=["*"]`로 설정됨
    - 운영시 특정 도메인만 허용하도록 수정 필요
 
+4. **Pydantic 경고**
+   - class-based config deprecated 경고 발생
+   - ConfigDict로 마이그레이션 필요
+
+---
+
+## 개발 히스토리
+
+### 2025-12-19 (Day 2)
+
+**오전 10:00 ~ 10:30**
+- README.md 및 claude.md 문서 정리
+- TODO 리스트 우선순위 정립
+- GitHub 커밋/푸시
+
+**오전 10:30 ~ 11:30**
+- Python 3.14 호환을 위한 requirements.txt 업데이트
+- passlib/bcrypt 호환성 문제 해결 (auth.py에서 bcrypt 직접 사용)
+- 서버 실행 및 Swagger UI API 테스트 완료
+- seed_data.py 작성 (테스트 데이터 생성 스크립트)
+- pytest 테스트 코드 작성 (28개 테스트 전체 통과)
+
+### 2025-12-17 (Day 1)
+- 프로젝트 초기화 및 GitHub 연동
+- FastAPI 백엔드 기본 구조 구축
+- 데이터베이스 모델 설계 및 구현
+- JWT 인증 시스템 구현
+- REST API 엔드포인트 구현
+
 ---
 
 ## 다음 세션에서 할 일 제안
 
-1. 서버 실행 및 API 테스트
-2. Swagger UI에서 전체 플로우 테스트 (회원가입 → 로그인 → 학생등록 → 출결/성적 입력)
-3. 프론트엔드 개발 시작 또는 테스트 코드 작성
+1. Frontend 개발 시작 (React.js 또는 Vue.js 선택)
+2. 통계 API 추가 (출결률, 평균 점수 등)
+3. 대시보드 페이지 구현
 
 ---
 
-*마지막 업데이트: 2025-12-19*
+*마지막 업데이트: 2025-12-19 11:30*
