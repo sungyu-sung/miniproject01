@@ -12,7 +12,7 @@
 
 ---
 
-## 현재 개발 상태 (2025-12-19 11:30 기준)
+## 현재 개발 상태 (2025-12-19 13:40 기준)
 
 ### 완료된 작업
 
@@ -37,6 +37,22 @@ miniproject01/
 │   │   └── test_grades.py    # 성적 API 테스트 (7개)
 │   ├── seed_data.py          # 테스트 데이터 생성 스크립트
 │   └── requirements.txt
+├── frontend/                  # React 프론트엔드 (NEW)
+│   ├── src/
+│   │   ├── api/index.js      # Axios API 클라이언트
+│   │   ├── context/AuthContext.jsx  # 인증 상태 관리
+│   │   ├── components/Layout.jsx    # 공통 레이아웃
+│   │   ├── pages/
+│   │   │   ├── Login.jsx     # 로그인 페이지
+│   │   │   ├── Dashboard.jsx # 대시보드
+│   │   │   ├── Students.jsx  # 학생 관리
+│   │   │   ├── Attendance.jsx# 출결 관리
+│   │   │   └── Grades.jsx    # 성적 관리
+│   │   ├── App.jsx           # 라우팅 설정
+│   │   ├── main.jsx          # 엔트리포인트
+│   │   └── index.css         # Tailwind CSS
+│   ├── package.json
+│   └── vite.config.js
 ├── venv/                      # Python 가상환경 (Python 3.14)
 ├── .gitignore
 ├── claude.md
@@ -109,54 +125,63 @@ miniproject01/
 
 ## 다음 개발 작업 (TODO)
 
-### 우선순위 높음
-1. **Frontend 개발**
-   - 기술 선택: React.js 또는 Vue.js
-   - `frontend/` 디렉토리에 구현
-   - 주요 페이지:
-     - 로그인 페이지
-     - 대시보드
-     - 학생 관리 페이지
-     - 출결 관리 페이지
-     - 성적 관리 페이지
+### 완료됨
+1. ~~**Frontend 개발**~~ ✅
+   - React.js + Vite + Tailwind CSS v4
+   - 모든 페이지 구현 완료 (로그인, 대시보드, 학생/출결/성적 관리)
 
+### 우선순위 높음
 2. **추가 API 기능**
-   - 출결 통계 API
-   - 성적 통계 API
-   - 학생 검색 API
+   - [ ] 출결 통계 API (출석률 계산, 기간별 통계)
+   - [ ] 성적 통계 API (평균, 석차, 과목별 분석)
+   - [ ] 학생 검색 API (이름, 학번으로 검색)
 
 ### 우선순위 중간
-3. **통계/시각화 기능**
-   - matplotlib/seaborn 활용
-   - 출결 현황 차트
-   - 성적 분포 그래프
+3. **대시보드 차트 시각화**
+   - [ ] Chart.js 또는 Recharts 라이브러리 연동
+   - [ ] 출결 현황 파이차트 (출석/지각/결석 비율)
+   - [ ] 성적 분포 막대그래프
+   - [ ] 월별 출결 추이 라인차트
+
+4. **학생별 상세 리포트**
+   - [ ] 학생 상세 페이지 구현
+   - [ ] 개인별 출결 이력
+   - [ ] 개인별 성적 추이 그래프
 
 ### 우선순위 낮음
-4. **인프라**
-   - PostgreSQL 연동
-   - Docker 컨테이너화
-   - 클라우드 배포 (AWS/GCP/Azure)
+5. **인프라**
+   - [ ] PostgreSQL 연동
+   - [ ] Docker 컨테이너화
+   - [ ] 클라우드 배포 (Vercel + Railway)
 
-5. **보안 강화**
-   - HTTPS 적용
-   - Rate limiting
-   - 입력 검증 강화
+6. **보안 강화**
+   - [ ] HTTPS 적용
+   - [ ] Rate limiting
+   - [ ] 입력 검증 강화
 
-6. **로그 시스템 구축**
-   - 요청/응답 로깅
-   - 에러 로깅
-   - 로그 파일 관리
+7. **로그 시스템 구축**
+   - [ ] 요청/응답 로깅
+   - [ ] 에러 로깅
+   - [ ] 로그 파일 관리
 
 ---
 
 ## 개발 시 참고사항
 
-### 서버 실행 방법
+### 백엔드 서버 실행 방법
 ```bash
 cd c:/rokey/miniproject01
 source venv/Scripts/activate  # 이미 가상환경 생성됨
 cd backend
 uvicorn app.main:app --reload
+# http://localhost:8000 에서 실행
+```
+
+### 프론트엔드 실행 방법
+```bash
+cd c:/rokey/miniproject01/frontend
+npm run dev
+# http://localhost:5173 에서 실행
 ```
 
 ### 테스트 실행 방법
@@ -227,6 +252,15 @@ httpx>=0.27.0
 - seed_data.py 작성 (테스트 데이터 생성 스크립트)
 - pytest 테스트 코드 작성 (28개 테스트 전체 통과)
 
+**오후 13:30 ~ 13:45**
+- React + Vite + Tailwind CSS v4 프론트엔드 구축
+- 로그인 페이지 구현 (JWT 인증 연동)
+- 대시보드 페이지 구현 (통계 카드, 최근 학생 목록)
+- 학생 관리 페이지 구현 (CRUD 기능)
+- 출결 관리 페이지 구현 (출결 등록/삭제)
+- 성적 관리 페이지 구현 (성적 등록/수정/삭제)
+- 프론트엔드 빌드 테스트 완료
+
 ### 2025-12-17 (Day 1)
 - 프로젝트 초기화 및 GitHub 연동
 - FastAPI 백엔드 기본 구조 구축
@@ -238,10 +272,10 @@ httpx>=0.27.0
 
 ## 다음 세션에서 할 일 제안
 
-1. Frontend 개발 시작 (React.js 또는 Vue.js 선택)
-2. 통계 API 추가 (출결률, 평균 점수 등)
-3. 대시보드 페이지 구현
+1. 통계 API 추가 (출결률, 평균 점수 등)
+2. 차트 라이브러리 연동 (Chart.js 또는 Recharts)
+3. 대시보드에 시각화 차트 추가
 
 ---
 
-*마지막 업데이트: 2025-12-19 11:30*
+*마지막 업데이트: 2025-12-19 14:00*
