@@ -12,6 +12,11 @@ const Grades = () => {
     subject: '',
     score: '',
   });
+  const [filters, setFilters] = useState({
+    studentName: '',
+    subject: '',
+  });
+  const [filteredData, setFilteredData] = useState([]);
 
   const fetchData = async () => {
     try {
@@ -31,6 +36,25 @@ const Grades = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    let result = grades;
+
+    if (filters.studentName) {
+      result = result.filter((grade) => {
+        const studentName = getStudentName(grade.student_id);
+        return studentName.toLowerCase().includes(filters.studentName.toLowerCase());
+      });
+    }
+
+    if (filters.subject) {
+      result = result.filter((grade) =>
+        grade.subject.toLowerCase().includes(filters.subject.toLowerCase())
+      );
+    }
+
+    setFilteredData(result);
+  }, [grades, filters, students]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -92,6 +116,13 @@ const Grades = () => {
     return 'text-red-600';
   };
 
+  const handleResetFilters = () => {
+    setFilters({
+      studentName: '',
+      subject: '',
+    });
+  };
+
   if (loading) {
     return <div className="text-center py-8">로딩 중...</div>;
   }
@@ -108,6 +139,43 @@ const Grades = () => {
         </button>
       </div>
 
+      {/* Filters */}
+      <div className="bg-white rounded-xl shadow p-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">학생 이름 검색</label>
+            <input
+              type="text"
+              value={filters.studentName}
+              onChange={(e) => setFilters({ ...filters, studentName: e.target.value })}
+              placeholder="학생 이름 입력"
+              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">과목 검색</label>
+            <input
+              type="text"
+              value={filters.subject}
+              onChange={(e) => setFilters({ ...filters, subject: e.target.value })}
+              placeholder="과목명 입력"
+              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
+          <div className="flex items-end">
+            <button
+              onClick={handleResetFilters}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+            >
+              초기화
+            </button>
+          </div>
+        </div>
+        <div className="mt-4 text-sm text-gray-600">
+          총 {filteredData.length}건 (전체 {grades.length}건)
+        </div>
+      </div>
+
       <div className="bg-white rounded-xl shadow overflow-hidden">
         <table className="w-full">
           <thead className="bg-gray-50">
@@ -120,7 +188,7 @@ const Grades = () => {
             </tr>
           </thead>
           <tbody className="divide-y">
-            {grades.map((grade) => (
+            {filteredData.map((grade) => (
               <tr key={grade.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4">{grade.id}</td>
                 <td className="px-6 py-4 font-medium">{getStudentName(grade.student_id)}</td>
@@ -146,8 +214,10 @@ const Grades = () => {
             ))}
           </tbody>
         </table>
-        {grades.length === 0 && (
-          <div className="text-center py-8 text-gray-500">성적 기록이 없습니다.</div>
+        {filteredData.length === 0 && (
+          <div className="text-center py-8 text-gray-500">
+            {grades.length === 0 ? '성적 기록이 없습니다.' : '필터 결과가 없습니다.'}
+          </div>
         )}
       </div>
 

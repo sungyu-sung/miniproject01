@@ -11,6 +11,12 @@ const Students = () => {
     student_number: '',
     class_name: '',
   });
+  const [filters, setFilters] = useState({
+    name: '',
+    student_number: '',
+    class_name: '',
+  });
+  const [filteredData, setFilteredData] = useState([]);
 
   const fetchStudents = async () => {
     try {
@@ -26,6 +32,30 @@ const Students = () => {
   useEffect(() => {
     fetchStudents();
   }, []);
+
+  useEffect(() => {
+    let result = students;
+
+    if (filters.name) {
+      result = result.filter((student) =>
+        student.name.toLowerCase().includes(filters.name.toLowerCase())
+      );
+    }
+
+    if (filters.student_number) {
+      result = result.filter((student) =>
+        student.student_number.toLowerCase().includes(filters.student_number.toLowerCase())
+      );
+    }
+
+    if (filters.class_name) {
+      result = result.filter((student) =>
+        student.class_name.toLowerCase().includes(filters.class_name.toLowerCase())
+      );
+    }
+
+    setFilteredData(result);
+  }, [students, filters]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -70,6 +100,14 @@ const Students = () => {
     setShowModal(true);
   };
 
+  const handleResetFilters = () => {
+    setFilters({
+      name: '',
+      student_number: '',
+      class_name: '',
+    });
+  };
+
   if (loading) {
     return <div className="text-center py-8">로딩 중...</div>;
   }
@@ -86,6 +124,53 @@ const Students = () => {
         </button>
       </div>
 
+      {/* Filters */}
+      <div className="bg-white rounded-xl shadow p-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">이름 검색</label>
+            <input
+              type="text"
+              value={filters.name}
+              onChange={(e) => setFilters({ ...filters, name: e.target.value })}
+              placeholder="이름 입력"
+              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">학번 검색</label>
+            <input
+              type="text"
+              value={filters.student_number}
+              onChange={(e) => setFilters({ ...filters, student_number: e.target.value })}
+              placeholder="학번 입력"
+              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">반 필터</label>
+            <input
+              type="text"
+              value={filters.class_name}
+              onChange={(e) => setFilters({ ...filters, class_name: e.target.value })}
+              placeholder="반 입력"
+              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
+          <div className="flex items-end">
+            <button
+              onClick={handleResetFilters}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+            >
+              초기화
+            </button>
+          </div>
+        </div>
+        <div className="mt-4 text-sm text-gray-600">
+          총 {filteredData.length}명 (전체 {students.length}명)
+        </div>
+      </div>
+
       <div className="bg-white rounded-xl shadow overflow-hidden">
         <table className="w-full">
           <thead className="bg-gray-50">
@@ -98,7 +183,7 @@ const Students = () => {
             </tr>
           </thead>
           <tbody className="divide-y">
-            {students.map((student) => (
+            {filteredData.map((student) => (
               <tr key={student.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4">{student.id}</td>
                 <td className="px-6 py-4 font-medium">{student.name}</td>
@@ -122,8 +207,10 @@ const Students = () => {
             ))}
           </tbody>
         </table>
-        {students.length === 0 && (
-          <div className="text-center py-8 text-gray-500">등록된 학생이 없습니다.</div>
+        {filteredData.length === 0 && (
+          <div className="text-center py-8 text-gray-500">
+            {students.length === 0 ? '등록된 학생이 없습니다.' : '검색 결과가 없습니다.'}
+          </div>
         )}
       </div>
 

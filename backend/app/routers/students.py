@@ -1,6 +1,6 @@
-from typing import List
+from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -21,6 +21,27 @@ def get_students(
 ):
     students = db.query(Student).offset(skip).limit(limit).all()
     return students
+
+
+@router.get("/search", response_model=List[StudentResponse])
+def search_students(
+    name: Optional[str] = Query(None, description="Student name search"),
+    student_number: Optional[str] = Query(None, description="Student number search"),
+    class_name: Optional[str] = Query(None, description="Class name search"),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Search students by name, student number, or class"""
+    query = db.query(Student)
+
+    if name:
+        query = query.filter(Student.name.contains(name))
+    if student_number:
+        query = query.filter(Student.student_number.contains(student_number))
+    if class_name:
+        query = query.filter(Student.class_name == class_name)
+
+    return query.all()
 
 
 @router.get("/{student_id}", response_model=StudentResponse)
@@ -89,13 +110,22 @@ def delete_student(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_teacher_or_admin)
 ):
+    from app.models.attendance import Attendance
+    from app.models.grade import Grade
+    
     db_student = db.query(Student).filter(Student.id == student_id).first()
     if not db_student:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Student not found"
         )
-
+    
+    # 관련 데이터 먼저 삭제
+    db.query(Attendance).filter(Attendance.student_id == student_id).delete(synchronize_session=False)
+    db.query(Grade).filter(Grade.student_id == student_id).delete(synchronize_session=False)
+    
+    # 학생 삭제
     db.delete(db_student)
     db.commit()
     return {"message": "Student deleted successfully"}
+

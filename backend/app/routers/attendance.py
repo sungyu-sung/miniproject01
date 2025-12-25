@@ -16,7 +16,7 @@ router = APIRouter(prefix="/api/attendance", tags=["attendance"])
 @router.get("/", response_model=List[AttendanceResponse])
 def get_attendances(
     skip: int = 0,
-    limit: int = 100,
+    limit: int = 10000,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):

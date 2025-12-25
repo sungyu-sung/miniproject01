@@ -12,5 +12,5 @@ class Student(Base):
     student_number = Column(String(20), unique=True, index=True, nullable=False)
     class_name = Column(String(50), nullable=False)
 
-    attendances = relationship("Attendance", back_populates="student")
-    grades = relationship("Grade", back_populates="student")
+    attendances = relationship("Attendance", back_populates="student", cascade="all, delete-orphan")
+    grades = relationship("Grade", back_populates="student", cascade="all, delete-orphan")

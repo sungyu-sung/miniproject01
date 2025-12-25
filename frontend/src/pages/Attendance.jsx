@@ -11,6 +11,12 @@ const Attendance = () => {
     date: new Date().toISOString().split('T')[0],
     status: '출석',
   });
+  const [filters, setFilters] = useState({
+    studentName: '',
+    date: '',
+    status: '전체',
+  });
+  const [filteredData, setFilteredData] = useState([]);
 
   const fetchData = async () => {
     try {
@@ -30,6 +36,31 @@ const Attendance = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    let result = attendances;
+
+    if (filters.studentName) {
+      result = result.filter((attendance) => {
+        const studentName = getStudentName(attendance.student_id);
+        return studentName.toLowerCase().includes(filters.studentName.toLowerCase());
+      });
+    }
+
+    if (filters.date) {
+      result = result.filter((attendance) =>
+        attendance.date === filters.date
+      );
+    }
+
+    if (filters.status && filters.status !== '전체') {
+      result = result.filter((attendance) =>
+        attendance.status === filters.status
+      );
+    }
+
+    setFilteredData(result);
+  }, [attendances, filters, students]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -78,6 +109,14 @@ const Attendance = () => {
     }
   };
 
+  const handleResetFilters = () => {
+    setFilters({
+      studentName: '',
+      date: '',
+      status: '전체',
+    });
+  };
+
   if (loading) {
     return <div className="text-center py-8">로딩 중...</div>;
   }
@@ -94,6 +133,55 @@ const Attendance = () => {
         </button>
       </div>
 
+      {/* Filters */}
+      <div className="bg-white rounded-xl shadow p-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">학생 이름 검색</label>
+            <input
+              type="text"
+              value={filters.studentName}
+              onChange={(e) => setFilters({ ...filters, studentName: e.target.value })}
+              placeholder="학생 이름 입력"
+              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">날짜 필터</label>
+            <input
+              type="date"
+              value={filters.date}
+              onChange={(e) => setFilters({ ...filters, date: e.target.value })}
+              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">상태 필터</label>
+            <select
+              value={filters.status}
+              onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+            >
+              <option value="전체">전체</option>
+              <option value="출석">출석</option>
+              <option value="지각">지각</option>
+              <option value="결석">결석</option>
+            </select>
+          </div>
+          <div className="flex items-end">
+            <button
+              onClick={handleResetFilters}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+            >
+              초기화
+            </button>
+          </div>
+        </div>
+        <div className="mt-4 text-sm text-gray-600">
+          총 {filteredData.length}건 (전체 {attendances.length}건)
+        </div>
+      </div>
+
       <div className="bg-white rounded-xl shadow overflow-hidden">
         <table className="w-full">
           <thead className="bg-gray-50">
@@ -106,7 +194,7 @@ const Attendance = () => {
             </tr>
           </thead>
           <tbody className="divide-y">
-            {attendances.map((attendance) => (
+            {filteredData.map((attendance) => (
               <tr key={attendance.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4">{attendance.id}</td>
                 <td className="px-6 py-4 font-medium">
@@ -134,8 +222,10 @@ const Attendance = () => {
             ))}
           </tbody>
         </table>
-        {attendances.length === 0 && (
-          <div className="text-center py-8 text-gray-500">출결 기록이 없습니다.</div>
+        {filteredData.length === 0 && (
+          <div className="text-center py-8 text-gray-500">
+            {attendances.length === 0 ? '출결 기록이 없습니다.' : '필터 결과가 없습니다.'}
+          </div>
         )}
       </div>
 
